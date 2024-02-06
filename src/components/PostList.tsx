@@ -1,17 +1,23 @@
+import { useState } from "react";
 import { Link  } from "react-router-dom";
 
 interface PostListProps {
     hasNavigation?: boolean;
 }
 
+type TabType = "all" | "my";
+
 export default function PostList({ hasNavigation = true}: PostListProps) {
+    const [activeTab, setActionTab] = useState<TabType>("all");
     return (
         <>
         {/* hasNavigation: list page에서는 보이고 profile페이지(나의글)에서는 보이면 안됨 */}
         {hasNavigation && (
             <div className = "post__navigation">
-                <div className="post__navigation--active">전체</div>
-                <div>나의 글</div>
+                <div role="presentation" onClick={() => setActionTab("all")}
+                    className={activeTab === "all" ? "post__navigation--active" : ""}>전체</div>
+                <div role="presentation" onClick={() => setActionTab("my")}
+                    className={activeTab === "my" ? "post__navigation--active" : ""}>나의 글</div>
             </div>
         )}
         <div className="post__list">
