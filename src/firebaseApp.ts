@@ -1,7 +1,8 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp, FirebaseApp, getApp } from "firebase/app";
+import "firebase/auth";
+
+// app 지역변수
+export let app: FirebaseApp;
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -12,6 +13,13 @@ const firebaseConfig = {
   messagingSenderId: process.env.REACT_APP_MESSAGEING_SENDER_ID,
   appId: process.env.REACT_APP_APP_ID
 };
+
+//app 할당, import시 매번 initialiging은 비효율적
+try {
+  app = getApp("app");
+} catch (e) {
+  app = initializeApp(firebaseConfig, "app");
+}
 
 // Initialize Firebase
 const firebase = initializeApp(firebaseConfig);
