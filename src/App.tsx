@@ -23,6 +23,7 @@ function App() {
 
     /* auth값을 관찰하고, currentUser값을 변경해야하므로(실시간으로 update) 
        onAuthStateChanged를 관찰자로 사용
+       헤딩 코드 단점 - 매번 onAuthStateChanged를 호출해야함
     */
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
