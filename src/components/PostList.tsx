@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import AuthContext from "context/AuthContext";
+import { useContext } from "react";
+import { db } from "firebaseApp";
+import { useEffect, useState } from "react";
 import { Link  } from "react-router-dom";
 
 interface PostListProps {
@@ -7,8 +11,32 @@ interface PostListProps {
 
 type TabType = "all" | "my";
 
+export interface PostProps {
+    id?: string;
+    title: string;
+    email: string;
+    summary: string;
+    content: string;
+    createdAt: string;
+}
+
 export default function PostList({ hasNavigation = true}: PostListProps) {
     const [activeTab, setActionTab] = useState<TabType>("all");
+    const [posts, setPosts] = useState<any[]>([]);
+    const {user} = useContext(AuthContext);
+
+    const getPosts = async () => {
+        const datas = await getDocs(collection(db, "posts"));
+        datas?.forEach((doc) => {
+            const dataObject = { ...doc.data(), id: doc.id };
+            setPosts((prev) => [...prev, dataObject as PostProps]);
+        });
+    };
+
+    useEffect(() => {
+        getPosts();
+    }, [])
+    
     return (
         <>
         {/* hasNavigation: list page에서는 보이고 profile페이지(나의글)에서는 보이면 안됨 */}
@@ -21,23 +49,30 @@ export default function PostList({ hasNavigation = true}: PostListProps) {
             </div>
         )}
         <div className="post__list">
-            {[...Array(10)].map((e, index) => (
-                <div key={index} className="post__box">
-                    <Link to={`/posts/${index}`}>
+            {posts?.length > 0 ? posts?.map((posts, index) => (
+                <div key={posts?.id} className="post__box">
+                    <Link to={`/posts/${posts?.id}`}>
                         <div className = "post__profile-box">
                             <div className="post__profile" />
-                            <div className="post__author-name" >{index}번째 작가</div>
-                            <div className="post__date" >2024.2.{index+1}</div>
+                            <div className="post__author-name" >{posts?.email}번째 작가</div>
+                            <div className="post__date" >{posts?.createdAt}</div>
                         </div>
-                        <div className = "post__title">게시글 {index}</div>
-                        <div className = "post__text">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</div>
+                        <div className = "post__title">{posts?.title}</div>
+                        <div className = "post__text">{posts?.summary}</div>
+                    </Link>
+                        {posts?.email === user?.email && (
                         <div className = "post__utils-box">
                             <div className = "post__delete">삭제</div>
-                            <div className = "post__edit">수정</div>
+                            <div className = "post__edit">
+                                <Link to={`/post/edit/${posts?.id}`}>수정</Link>
+                            </div>
                         </div>
-                    </Link>
+                        )}
                 </div>
-            ))}
+            ))
+        : (
+            <div className="post__no-post">게시글이 없습니다.</div>
+        )}
         </div>
         </>
     )
