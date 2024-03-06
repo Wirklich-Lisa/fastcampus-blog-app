@@ -18,6 +18,8 @@ export interface PostProps {
     summary: string;
     content: string;
     createdAt: string;
+    updatedAt: string;
+    uid: string;
 }
 
 export default function PostList({ hasNavigation = true}: PostListProps) {
@@ -54,7 +56,7 @@ export default function PostList({ hasNavigation = true}: PostListProps) {
                     <Link to={`/posts/${posts?.id}`}>
                         <div className = "post__profile-box">
                             <div className="post__profile" />
-                            <div className="post__author-name" >{posts?.email}번째 작가</div>
+                            <div className="post__author-name" >{posts?.email}</div>
                             <div className="post__date" >{posts?.createdAt}</div>
                         </div>
                         <div className = "post__title">{posts?.title}</div>
@@ -64,7 +66,7 @@ export default function PostList({ hasNavigation = true}: PostListProps) {
                         <div className = "post__utils-box">
                             <div className = "post__delete">삭제</div>
                             <div className = "post__edit">
-                                <Link to={`/post/edit/${posts?.id}`}>수정</Link>
+                                <Link to={`/posts/edit/${posts?.id}`}>수정</Link>
                             </div>
                         </div>
                         )}
