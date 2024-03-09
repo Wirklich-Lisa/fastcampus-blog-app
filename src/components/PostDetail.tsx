@@ -1,25 +1,33 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useNavigate } from "react-router-dom"
 import { PostProps } from "./PostList";
-import { doc, getDoc } from "firebase/firestore"
+import { deleteDoc, doc, getDoc } from "firebase/firestore"
 import { db } from "firebaseApp"
 import Loader from "./Loader";
+import { toast } from "react-toastify";
 
 export default function PostDetail() {
     const params = useParams();
     const [post, setPost] = useState<PostProps | null>(null);
+    const navigate = useNavigate();
 
     const getPost = async (id: string) => {
         if(id) {
-            const docRef = doc(db, 'posts', id);
+            const docRef = doc(db, "posts", id);
             const docSnap = await getDoc(docRef);
 
             setPost({id: docSnap.id, ...docSnap.data() as PostProps});
         }
     };
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
+        const confirm = window.confirm("삭제하실라구요?");
+        if (confirm && post && post.id) {
+            await deleteDoc(doc(db, "posts", post.id));
+            toast.success('게시글 삭제되었습니다');
+            navigate('/');
 
+        }
     }
 
     useEffect(() => {
