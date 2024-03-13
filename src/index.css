@@ -62,6 +62,12 @@ footer a:focus, footer a:hover {
   color: black;
 }
 
+.footer__theme-btn {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
 /* post__navigation */
 .post__navigation {
   display: flex;
@@ -484,3 +490,50 @@ input:checked + .carousel__slide-container .nav label {
 }
 
 
+/* dart mode 
+transition : 웹 요소의 속성 변화를 부드럽게 만들어줌
+all 0.25s liner : 0.25초 동안 부드럽게 전환
+*/
+.white {
+  transition: all 0.25s liner; 
+  background-color: white;
+}
+
+
+.dark {
+  transition: all 0.25s liner;
+  background-color: #1e2937;
+  min-height: 100vh;
+}
+
+.dark a,
+.dark .form label,
+.dark .post__delete,
+.dark .profile__logout,
+.dark .form__title,
+.dark .post__navigation--active,
+.dark .post__title,
+.dark .post__author-name,
+.dark .footer__theme-btn,
+.dark .profile__name {
+  color: white;
+}
+
+.dark a:hover,
+.dark a:focus,
+.dark .post__text,
+.dark .post__text--pre-wrap,
+.dark .profile__email,
+.dark .post__date,
+.dark .form__block {
+  color: lightgray;
+}
+
+.dark .form__error {
+  color: #ff6a71;
+}
+
+.dark footer,
+.dart header {
+  background-color: #111827;
+}
