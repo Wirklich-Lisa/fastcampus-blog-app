@@ -1,4 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { PostProps } from "./PostList";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { db } from "firebaseApp";
+import AuthContext from "context/AuthContext";
+import { toast } from "react-toastify";
 
 const COMMENTS = [
     {id:1, email:"test@test.com", content: "댓글1이지롱!", createdAt:"2024-02-12"},
@@ -8,8 +13,14 @@ const COMMENTS = [
     {id:5, email:"test@test.com", content: "댓글5이지롱!", createdAt:"2024-02-16"},
 ]
 
-export default function Comments() {
+interface CommentsProps {
+    post: PostProps;
+}
+
+export default function Comments( { post }: CommentsProps ) {
+    //console.log(post); //PostDetail에서 넘어온 post Props
     const [comments, setComment] = useState("");
+    const { user } = useContext(AuthContext);
 
     const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const {
@@ -21,11 +32,48 @@ export default function Comments() {
         }
     };
 
+    const onSubmit = async (e: React.FocusEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        try {
+            if(post && post?.id) {
+                const postRef = doc(db, "posts", post.id);
+                
+                if(user?.uid) {
+                    const commentObj = {
+                        content: comments,
+                        uid: user.uid,
+                        email: user.email,
+                        createdAt: new Date()?.toLocaleDateString("ko", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit", 
+                        }),
+                    };
+
+                    await updateDoc(postRef, {
+                        comments: arrayUnion(commentObj),
+                        updatedAt: new Date()?.toLocaleDateString("ko", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit", 
+                        }),
+                    })
+                }
+            }
+
+            toast.success("댓글을 생성하였습니다.");
+            setComment("");
+        } catch (error: any) {
+            console.log(error);
+            toast.error(error?.code);
+        }
+    }
 
 
     return (
         <div className="comments">
-            <form className="comments__form">
+            <form className="comments__form" onSubmit={onSubmit}>
                 <div className="form__block">
                     <label htmlFor="comments">댓글 입력</label>
                     <textarea name="comments" id="comments" required value={comments} onChange={onChange}/>
